@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import zmq
 from pynput import keyboard
 import time
