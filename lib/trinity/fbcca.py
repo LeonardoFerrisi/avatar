@@ -15,7 +15,7 @@ class filterbankCCA:
     Parameters:
 
     eeg (dtype: ndarray (dtype: float64)): The eeg data
-    list_freqs (dtype: ):
+    list_freqs (dtype: ): The list of existing frequencies
     s (dtype: int64): sampling rate
 
     """
@@ -26,7 +26,6 @@ class filterbankCCA:
         self.SAMPLINGRATE = s
         self.harmonicsQ = num_harms # The number of harmonics, idk what that is
         self.filterbanksQ = num_fbs # The quantity of filterbanks
-        pass
 
     def sync_CCA(self):
         """
