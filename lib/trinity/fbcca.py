@@ -25,7 +25,7 @@ class filterbankCCA:
         self.freqs = list_freqs
         self.SAMPLINGRATE = s
         self.harmonicsQ = num_harms # The number of harmonics, idk what that is
-        self. 
+        self.filterbanksQ = num_fbs # The quantity of filterbanks
         pass
 
     def sync_CCA(self):
