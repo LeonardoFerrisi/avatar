@@ -8,22 +8,41 @@ import numpy as np
 Class for Synchronous (Real Time)
 Filter-Bank Canonical Correlation Analysis
 """
-class filterbankCCA_sync:
-    """
-    Paramters:
 
-    Return:
+class filterbankCCA:
 
     """
-    def __init__(self):
+    Parameters:
+
+    eeg (dtype: ndarray (dtype: float64)): The eeg data
+    list_freqs (dtype: ):
+    s (dtype: int64): sampling rate
+
+    """
+    def __init__(self, eeg, list_freqs, s, num_harms=3, num_fbs=5):
+        self.data = eeg 
+        self.data_shape = eeg.shape
+        self.freqs = list_freqs
+        self.SAMPLINGRATE = s
+        self.harmonicsQ = num_harms # The number of harmonics, idk what that is
+        self. 
         pass
 
-"""
+    def sync_CCA(self):
+        """
+        Paramters:
 
-"""
-class filterbankCCA_async:
+        Return:
 
-    def __init__(self):
+        """
+        pass
+
+    def async_CCA(self):
+        """
+        Parameters:
+
+        Return:
+        """
         pass
 
 
