@@ -59,7 +59,8 @@ while True:
             for desired_char in desired:
                 # if key is desired char, add char to user_text and end loop
                 if event.unicode == desired_char:
-                    user_text = ' ' + event.unicode + ' '
+                    user_input = event.unicode
+                    user_text = ' ' + user_input + ' '
                     not_desired = False
                     break
                 else:
