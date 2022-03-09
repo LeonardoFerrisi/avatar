@@ -10,15 +10,15 @@ def blink_block(win, frequency, location: tuple, size : int, blockNum : int):
 
     # frameRate = 200
 
-    if frequency==10:
-        frameRate = 200
-    elif frequency==14 or frequency == 12:
-        frameRate = 120
-    elif frequency==16:
-        frameRate = 80
-    elif frequency == 20:
-        frameRate = 60
-
+    # if frequency==10:
+    #     frameRate = 200
+    # elif frequency==14 or frequency == 12:
+    #     frameRate = 120
+    # elif frequency==16:
+    #     frameRate = 80
+    # elif frequency == 20:
+    #     frameRate = 60
+    frameRate = 60
     # b.wait()
 
     while True:

@@ -7,8 +7,8 @@ from blink import blink_block, generateStimuliSquares
 
 """Const Init Start"""
 # assigning values to X and Y variable
-X = 800
-Y = 600
+# X = 800
+# Y = 600
 
 # color constants
 white = (255, 255, 255)
@@ -25,7 +25,12 @@ pygame.init()
 clock = pygame.time.Clock()
 
 # it will display on screen
-screen = pygame.display.set_mode((X, Y))
+# screen = pygame.display.set_mode((X, Y))
+screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
+
+
+X,Y = screen.get_size()
+
 
 # basic font for user typed
 base_font = pygame.font.Font(None, 32)
@@ -55,7 +60,7 @@ while True:
     for event in pygame.event.get():
 
         # if user types QUIT then the screen will close
-        if event.type == pygame.QUIT:
+        if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.unicode == 'x'):
             pygame.quit()
             sys.exit()
 
@@ -89,12 +94,12 @@ while True:
     # no more than 60 fps
     clock.tick(60)
 
-    frequencies = [10, 14, 16, 20] # 10 Hz
+    frequencies = [100, 100, 100, 100] # 10 Hz
 
     w, h = screen.get_size()
          
     
-    size = 150
+    size = 400 # size of SSVEP stimuli
 
     # locations
     subCoordW = w - (30.0 + size)
