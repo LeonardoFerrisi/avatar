@@ -19,3 +19,5 @@ bin-release/
 # information for Eclipse / Flash Builder.
 
 /avatar_env/Lib/site-packages/*
+src/nb/*
+src/__pycache__/*
