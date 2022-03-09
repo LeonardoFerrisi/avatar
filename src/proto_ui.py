@@ -1,11 +1,14 @@
 # import sys module
 import pygame
 import sys
+import multiprocessing
+import threading
+from blink import blink_block, generateStimuliSquares
 
 """Const Init Start"""
 # assigning values to X and Y variable
-X = 600
-Y = 200
+X = 800
+Y = 600
 
 # color constants
 white = (255, 255, 255)
@@ -46,7 +49,9 @@ text_wrong_arg = base_font.render(wrong_arg, True, white)
 wrong_rect = text_wrong_arg.get_rect()
 wrong_rect.center = (X//2, (Y//4)*3)
 
+# GUI loop
 while True:
+
     for event in pygame.event.get():
 
         # if user types QUIT then the screen will close
@@ -71,6 +76,7 @@ while True:
     screen.fill(black)
     text_surface = base_font.render(user_text, True, black, white)
 
+    
     # render texts at positions
     screen.blit(text_surface, text_rect)
     screen.blit(text_prompt, prompt_rect)
@@ -82,3 +88,40 @@ while True:
 
     # no more than 60 fps
     clock.tick(60)
+
+    frequencies = [10, 14, 16, 20] # 10 Hz
+
+    w, h = screen.get_size()
+         
+    
+    size = 150
+
+    # locations
+    subCoordW = w - (30.0 + size)
+    subCoordH = h - (30.0 + size)
+
+    loc1 = (30.0, 30.0) # top left (where top corner is (0,0))
+    loc2 = (subCoordW, 30.0)
+    loc3 = (30.0, subCoordH)
+    loc4 = (subCoordW, subCoordH)
+
+    #####
+
+
+    #### Threads, attempt to use multiprocessing instead....
+
+    thread1 = threading.Thread(target=blink_block, args=([screen, frequencies[0], loc1, size, 1]))
+    thread1.setDaemon(True)
+    thread1.start()
+
+    thread2 = threading.Thread(target=blink_block, args=([screen, frequencies[1], loc2, size, 2]))
+    thread2.setDaemon(True)
+    thread2.start()
+
+    thread3 = threading.Thread(target=blink_block, args=([screen, frequencies[2], loc3, size, 3]))
+    thread3.setDaemon(True)
+    thread3.start()
+
+    thread4 = threading.Thread(target=blink_block, args=([screen, frequencies[3], loc4, size, 4]))
+    thread4.setDaemon(True)
+    thread4.start()
