@@ -23,3 +23,4 @@ src/nb/*
 src/__pycache__/*
 avatar_env/Scripts/*
 src/psychopy_test.py
+avatar_env_unix/*
