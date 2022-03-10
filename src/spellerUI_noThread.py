@@ -21,12 +21,19 @@ def draw_stimuli(j,win, positions, frequencies, size):
         pygame.display.update()
         i+=1
 
-    """
-    _summary_: Updates the letters on the screen
-    @param win: The pygame.Surface obj (screen)
-    @param letters: List of lists of letters
-    @param levelsIn: How many levels in the lists are we?
-    """
+def fillBox(lettersList : list):
+    toReturn = ""
+    for letter in lettersList:
+        toReturn += letter + "    "
+    return toReturn
+
+
+"""
+_summary_: Updates the letters on the screen
+@param win: The pygame.Surface obj (screen)
+@param letters: List of lists of letters
+@param levelsIn: How many levels in the lists are we?
+"""
 def update_letters(screen, letters : list, levelsIn : int, positions, stimSize : int):
     # positions for boxes
     x1, y1 = positions[0]
@@ -35,19 +42,14 @@ def update_letters(screen, letters : list, levelsIn : int, positions, stimSize :
     x4, y4 = positions[3]
     
     # render and prompt text
-    box1 = str(letters[0])
-    box2 = str(letters[1])
-    box3 = str(letters[2])
-    box4 = str(letters[3])
-    # boxes = [box1, box2, box3, box4]
-    # v = 0
-    # for set in letters:
-    #     for char in set:
-    #         toAdd = " "+char+" "
-    #         boxes[v]+=toAdd
-    #     v+=1
-    
-    #box1
+    # box1 = str(letters[0])
+    # box2 = str(letters[1])
+    # box3 = str(letters[2])
+    # box4 = str(letters[3])
+    box1 = fillBox(lettersList=letters[0])
+    box2 = fillBox(lettersList=letters[1])
+    box3 = fillBox(lettersList=letters[2])
+    box4 = fillBox(lettersList=letters[3])
     
     distFrom = 200
     box1_txt = base_font.render(box1, True, green, black)
@@ -55,13 +57,13 @@ def update_letters(screen, letters : list, levelsIn : int, positions, stimSize :
     box1_rect.center = (x1+stimSize+distFrom, y1+40)
     box2_txt = base_font.render(box2, True, green, black)
     box2_rect = box2_txt.get_rect()
-    box2_rect.center = (x2-distFrom, y2+40)
+    box2_rect.center = (x2-distFrom+10, y2+40)
     box3_txt = base_font.render(box3, True, green, black)
     box3_rect = box3_txt.get_rect()
     box3_rect.center = (x3+stimSize+distFrom, y3+40)
     box4_txt = base_font.render(box4, True, green, black)
     box4_rect = box4_txt.get_rect()
-    box4_rect.center = (x4-distFrom, y4+40)
+    box4_rect.center = (x4-distFrom+10, y4+40)
     
     screen.blit(box1_txt, (box1_rect.left, box1_rect.top))
     screen.blit(box2_txt, (box2_rect.left, box2_rect.top))
@@ -203,18 +205,13 @@ if __name__ == "__main__":
                         not_desired = True
 
         # it will set background color of screen
-        # screen.fill(black)
-        
-
+        # screen.fill(black) #fucks with flashing
         text_surface = base_font.render(user_text, True, green, black)
 
-        
         # render texts at positions
         pygame.draw.rect(screen, black, bk_rect)
         
         update_letters(screen=screen, letters=currentChars, levelsIn=lvlIn, positions=locations, stimSize=size)
-        
-        # screen.blit()
         screen.blit(text_surface, text_rect)
         screen.blit(text_prompt, prompt_rect)
         if not_desired:
@@ -222,20 +219,7 @@ if __name__ == "__main__":
 
         # update portion of screen
         pygame.display.flip()
-
-
-        # no more than 60 fps
-        # clock.tick(60)
-
-        
         frequencies = [6.67, 7.5 ,8.57, 10] # 10 Hz
-
-        
-
-        
-
-
-
         current_time = pygame.time.get_ticks()
 
         # is time to change ?
