@@ -11,6 +11,22 @@ import time
 
 def startThreads(screen : pygame.Surface):
     #### Threads, attempt to use multiprocessing instead....
+    
+    frequencies = [10, 12, 15, 20] # 10 Hz
+
+    w, h = screen.get_size()
+        
+    
+    size = 400 # size of SSVEP stimuli
+
+    # locations
+    subCoordW = w - (30.0 + size)
+    subCoordH = h - (30.0 + size)
+
+    loc1 = (30.0, 30.0) # top left (where top corner is (0,0))
+    loc2 = (subCoordW, 30.0)
+    loc3 = (30.0, subCoordH)
+    loc4 = (subCoordW, subCoordH)
 
     thread1 = threading.Thread(target=blink_block, args=([screen, frequencies[0], loc1, size, 1]))
     thread1.setDaemon(True)
@@ -120,21 +136,7 @@ if __name__ == "__main__":
         # no more than 60 fps
         clock.tick(60)
 
-        frequencies = [100, 100, 100, 100] # 10 Hz
-
-        w, h = screen.get_size()
-            
         
-        size = 400 # size of SSVEP stimuli
-
-        # locations
-        subCoordW = w - (30.0 + size)
-        subCoordH = h - (30.0 + size)
-
-        loc1 = (30.0, 30.0) # top left (where top corner is (0,0))
-        loc2 = (subCoordW, 30.0)
-        loc3 = (30.0, subCoordH)
-        loc4 = (subCoordW, subCoordH)
 
         #####
 
