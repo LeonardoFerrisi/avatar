@@ -11,7 +11,10 @@ import math
 
 class UI:
     def __init__(self):
-        self.isThreading = False
+        # Constants to edit for desired processes
+        self.isThreading = True
+        self.FREQ = [5, 7, 10, 15]
+        ########
         self.threadsOn = False
         self.notDesired = False
         self.locs = ()
@@ -28,7 +31,6 @@ class UI:
         self.ENDSCRN = (pygame.K_x, pygame.K_ESCAPE)
         self.PROMPT = 'Please enter a command (i/j/k/l):'
         self.WRONG = "Incorrect char inputted"
-        self.FREQ = [3.75, 7.5, 15, 30]
 
     def _init_pygame(self):
         pygame.init()
@@ -53,7 +55,9 @@ class UI:
         self.text_rect.center = (self.X // 2, self.Y // 2 - (self.base_font.get_height()) // 2)
 
         # black rect to cover/update text segment of screen
-        self.black_rect = pygame.Rect(self.prompt_rect.left, 0, self.prompt_rect.width, self.Y)
+        self.black_rect = pygame.Rect(0, 0, self.prompt_rect.width, 0)
+        self.black_rect.height = self.wrong_rect.top + self.base_font.get_height() - self.prompt_rect.top // 2
+        self.black_rect.center = (self.X // 2, self.Y // 2)
 
     def start_threads(self):
         threads = {}
