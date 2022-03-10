@@ -6,11 +6,12 @@ import numpy as np
 import threading
 from blink import blink_block, generateStimuliSquares
 import time
+import math
 
 
 class UI:
     def __init__(self):
-        self.isThreading = True
+        self.isThreading = False
         self.threadsOn = False
         self.notDesired = False
         self.locs = ()
@@ -27,7 +28,7 @@ class UI:
         self.ENDSCRN = (pygame.K_x, pygame.K_ESCAPE)
         self.PROMPT = 'Please enter a command (i/j/k/l):'
         self.WRONG = "Incorrect char inputted"
-        self.FREQ = [1, 5, 10, 20]
+        self.FREQ = [3.75, 7.5, 15, 30]
 
     def _init_pygame(self):
         pygame.init()
@@ -61,12 +62,26 @@ class UI:
             threads[i].setDaemon(True)
             threads[i].start()
 
-    def no_thread_stimuli(self):
-        pass
+    def no_thread_stimuli(self, j):
+        for i in range(0, len(self.FREQ)):
+            result = math.sin(2 * math.pi * self.FREQ[i] * j / 60)
+            sign = lambda x: (1, 0)[x < 0]
+            color = 255 * sign(result)
+            colors = [color, color, color]
+            pose = self.locs[i]
+            stimuli_rect = pygame.Rect(pose[0], pose[1], self.LSIZE, self.LSIZE)
+            pygame.draw.rect(self.screen, colors, stimuli_rect)
+            pygame.display.update()
 
     def run_ui(self):
         user_text = ''
         self.screen.fill(self.BLACK)
+        # local vars for non-threading stimuli
+        change_time = 0
+        delay = 1000./60
+        show = True
+        j = 0
+
         while True:
 
             for event in pygame.event.get():
@@ -114,8 +129,13 @@ class UI:
             self.locs = (loc1, loc2, loc3, loc4)
             #####
 
-            if not self.isThreading:
-                self.no_thread_stimuli()
+            current_time = pygame.time.get_ticks()
+            if not self.isThreading and current_time >= change_time:
+                change_time = current_time + delay
+                show = not show
+                self.no_thread_stimuli(j)
+                pygame.display.update()
+                j += 1
             elif self.isThreading and not self.threadsOn:
                 self.threadsOn = True
                 self.start_threads()
