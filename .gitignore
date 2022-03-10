@@ -21,9 +21,6 @@ bin-release/
 /avatar_env/Lib/site-packages/*
 src/nb/*
 src/__pycache__/*
-<<<<<<< HEAD
-avatar_env_unix/*
-=======
 avatar_env/Scripts/*
 src/psychopy_test.py
->>>>>>> 54808b0956a2a06051d92ddf6fbc58d8105cf23c
+avatar_env_unix/*
