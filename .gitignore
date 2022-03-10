@@ -21,3 +21,4 @@ bin-release/
 /avatar_env/Lib/site-packages/*
 src/nb/*
 src/__pycache__/*
+avatar_env_unix/*
