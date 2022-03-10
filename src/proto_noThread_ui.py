@@ -2,61 +2,10 @@
 from turtle import back
 import pygame
 import sys
-import multiprocessing as mp
 import numpy as np
-import threading
 from blink import blink_block, generateStimuliSquares
 import time
 import math
-
-
-
-def startThreads(screen : pygame.Surface):
-    #### Threads, attempt to use multiprocessing instead....
-    
-    frequencies = [6.67, 7.5 ,8.57, 10] # 10 Hz
-
-    w, h = screen.get_size()
-        
-    
-    size = 400 # size of SSVEP stimuli
-
-    # locations
-    subCoordW = w - (30.0 + size)
-    subCoordH = h - (30.0 + size)
-
-    loc1 = (30.0, 30.0) # top left (where top corner is (0,0))
-    loc2 = (subCoordW, 30.0)
-    loc3 = (30.0, subCoordH)
-    loc4 = (subCoordW, subCoordH)
-
-    thread1 = threading.Thread(target=blink_block, args=([screen, frequencies[0], loc1, size, 1]))
-    thread1.setDaemon(True)
-    thread1.start()
-
-    thread2 = threading.Thread(target=blink_block, args=([screen, frequencies[1], loc2, size, 2]))
-    thread2.setDaemon(True)
-    thread2.start()
-
-    thread3 = threading.Thread(target=blink_block, args=([screen, frequencies[2], loc3, size, 3]))
-    thread3.setDaemon(True)
-    thread3.start()
-
-    thread4 = threading.Thread(target=blink_block, args=([screen, frequencies[3], loc4, size, 4]))
-    thread4.setDaemon(True)
-    thread4.start()
-
-def startProcesses(screen, frequencies, locations, size):
-    
-    pool = mp.Pool(4)
-
-    for i in range(3):
-        pool.apply_async(blink_block, args=(screen, frequencies[i], locations[i], size, i+1,))    
-        # p = mp.Process(target=blink_block, args=(screen, frequencies[i], locations[i], size, i+1))
-        # p.start()
-        # time.sleep(1)
-    pool.close()
-    pool.join()
 
 def draw_stimuli(j,win, positions, frequencies, size):
     i=0
