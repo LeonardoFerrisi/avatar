@@ -6,12 +6,16 @@ import numpy as np
 import threading
 from blink import blink_block, generateStimuliSquares
 import time
+import math
 
 
 class UI:
     def __init__(self):
+        self.isThreading = False
         self.threadsOn = False
         self.notDesired = False
+        self.locs = ()
+        self.user_input = ''
         self._init_const()
         self._init_pygame()
         self._init_text()
@@ -24,7 +28,7 @@ class UI:
         self.ENDSCRN = (pygame.K_x, pygame.K_ESCAPE)
         self.PROMPT = 'Please enter a command (i/j/k/l):'
         self.WRONG = "Incorrect char inputted"
-        self.FREQ = [1, 5, 10, 20]
+        self.FREQ = [3.75, 7.5, 15, 30]
 
     def _init_pygame(self):
         pygame.init()
@@ -45,19 +49,39 @@ class UI:
         self.wrong_rect.center = (self.X // 2, (self.Y // 4) * 3)
 
         # user input text
-        self.user_input = ''
         self.text_rect = pygame.Rect(0, 0, 0, 0)
         self.text_rect.center = (self.X // 2, self.Y // 2 - (self.base_font.get_height()) // 2)
 
-    def start_threads(self, locs):
+        # black rect to cover/update text segment of screen
+        self.black_rect = pygame.Rect(self.prompt_rect.left, 0, self.prompt_rect.width, self.Y)
+
+    def start_threads(self):
         threads = {}
         for i in range(0, 4):
-            threads[i] = threading.Thread(target=blink_block, args=([self.screen, self.FREQ[i], locs[i], self.LSIZE, i + 1]))
+            threads[i] = threading.Thread(target=blink_block, args=([self.screen, self.FREQ[i], self.locs[i], self.LSIZE, i + 1]))
             threads[i].setDaemon(True)
             threads[i].start()
 
+    def no_thread_stimuli(self, j):
+        for i in range(0, len(self.FREQ)):
+            result = math.sin(2 * math.pi * self.FREQ[i] * j / 60)
+            sign = lambda x: (1, 0)[x < 0]
+            color = 255 * sign(result)
+            colors = [color, color, color]
+            pose = self.locs[i]
+            stimuli_rect = pygame.Rect(pose[0], pose[1], self.LSIZE, self.LSIZE)
+            pygame.draw.rect(self.screen, colors, stimuli_rect)
+            pygame.display.update()
+
     def run_ui(self):
         user_text = ''
+        self.screen.fill(self.BLACK)
+        # local vars for non-threading stimuli
+        change_time = 0
+        delay = 1000./60
+        show = True
+        j = 0
+
         while True:
 
             for event in pygame.event.get():
@@ -68,7 +92,7 @@ class UI:
                     sys.exit()
 
                 if event.type == pygame.KEYDOWN:
-                    if event.key.unicode in self.DESIRED:
+                    if event.unicode in self.DESIRED:
                         self.user_input = event.unicode
                         user_text = ' ' + self.user_input + ' '
                         self.notDesired = False
@@ -78,8 +102,10 @@ class UI:
                         self.notDesired = True
 
             # it will set background color of screen
-            self.screen.fill(self.BLACK)
             text_surface = self.base_font.render(user_text, True, self.BLACK, self.WHITE)
+
+            # Draw black rect around text area of screen
+            pygame.draw.rect(self.screen, self.BLACK, self.black_rect)
 
             # render texts at positions
             self.screen.blit(text_surface, self.text_rect)
@@ -100,12 +126,19 @@ class UI:
             loc2 = (sub_coord_w, 30.0)
             loc3 = (30.0, sub_coord_h)
             loc4 = (sub_coord_w, sub_coord_h)
-            locations = (loc1, loc2, loc3, loc4)
+            self.locs = (loc1, loc2, loc3, loc4)
             #####
 
-            if not self.threadsOn:
+            current_time = pygame.time.get_ticks()
+            if not self.isThreading and current_time >= change_time:
+                change_time = current_time + delay
+                show = not show
+                self.no_thread_stimuli(j)
+                pygame.display.update()
+                j += 1
+            elif self.isThreading and not self.threadsOn:
                 self.threadsOn = True
-                self.start_threads(locations)
+                self.start_threads()
 
 
 if __name__ == "__main__":
