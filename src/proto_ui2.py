@@ -15,7 +15,7 @@ class UI:
         self._init_const()
         self._init_pygame()
         self._init_text()
-        self.LSIZE = self.X // 4
+        self.LSIZE = self.X // 5
 
     def _init_const(self):
         self.WHITE = (255, 255, 255)
@@ -93,11 +93,9 @@ class UI:
             # no more than 60 fps
             self.clock.tick(60)
 
-            size = 100  # size of SSVEP stimuli
-
             # locations of stimuli blocks (top left corners of each block)
-            sub_coord_w = self.X - (30.0 + size)
-            sub_coord_h = self.Y - (30.0 + size)
+            sub_coord_w = self.X - (30.0 + self.LSIZE)
+            sub_coord_h = self.Y - (30.0 + self.LSIZE)
             loc1 = (30.0, 30.0)
             loc2 = (sub_coord_w, 30.0)
             loc3 = (30.0, sub_coord_h)
