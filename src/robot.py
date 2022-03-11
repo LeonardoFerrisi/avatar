@@ -57,38 +57,6 @@ class Robot:
 
 
             time.sleep(1)
-
-    
-    # def obey(self, command):
-        
-    #     # if the command is one of four commands
-    #     if command=='0' or command=='i':
-
-    #         # FWD
-    #         cmd = 'tr'
-
-    #     elif command=='1' or command=='o':
-
-    #         # BKD    
-    #         cmd = 'tl'
-        
-    #     elif command=='2' or command=='k':
-            
-    #         # RIGHT
-    #         cmd = 'br'
-
-    #     elif command=='3' or command=='l':
-            
-    #         # LEFT
-    #         cmd = 'bl'
-
-    #     else:
-    #         raise Exception("Command not recognized >> obey( %s )?"% command)
-
-
-    #     if cmd in ['tr', 'tl', 'br', 'bl']:
-    #         self.move(cmd)
-
     
     def move(self, direction, i):
         pub = rospy.Publisher('/cmd_vel', Twist, queue_size=10)
@@ -98,22 +66,22 @@ class Robot:
 
         if direction=='tl':
             i = 0
-            movCmd.linear.x = speed
+            movCmd.linear.x = speed*-1
             pub.publish(movCmd)
 
         elif direction=='tr':
             i = 0
-            movCmd.linear.x = -speed
+            movCmd.linear.x = speed
             pub.publish(movCmd)
 
         elif direction=='br':
             i = 0
-            movCmd.angular.z = speed*5
+            movCmd.angular.z = speed*-5
             pub.publish(movCmd)
 
         elif direction=='bl':
             i = 0
-            movCmd.angular.z = speed*-5
+            movCmd.angular.z = speed*5
             pub.publish(movCmd)
         
         else:
@@ -123,6 +91,7 @@ class Robot:
                 movCmd.linear.x = 0.0
         
         rate.sleep()
+        return i
     ##################################################
 
     # ODOMETRY #########################################

@@ -167,16 +167,18 @@ class SFPR:
                     # Do all SSVEP values for 4 squares we want 
                     # wantedFreqs = [10, 15, 20, 25] # wanted values in HZ
                         # wantedFreqs = np.arange(4.0, 15.0+1, 4.0).tolist() # wanted values in HZ
-                        wantedFreqs = np.arange(5.0,15+1,0.2)
+                        # wantedFreqs = np.arange(5.0,15+1,0.2)
+                        wantedFreqs = [6.4, 10.2, 14.4, 18.4]
 
-                        ourFreqs = wantedFreqs[11:15]
+
+                        # ourFreqs = wantedFreqs[11:15]
                         
                         if self.freqShown == False:
-                            print("Current Freqs: "+str(ourFreqs))
+                            print("Current Freqs: "+str(wantedFreqs))
                             self.freqShown = True
                         # wantedFreqs = [5, 10.2, 14.4, 18.3] # wanted values in HZ
 
-                        self.doSSVEP(num_channels=self.eeg_channels, currentData=self.currentData, samplingRate=self.sampling_rate, sendOverSocket=False, desiredFreqs=ourFreqs)
+                        self.doSSVEP(num_channels=self.eeg_channels, currentData=self.currentData, samplingRate=self.sampling_rate, sendOverSocket=False, desiredFreqs=wantedFreqs)
 
                         self.timeSt = time.time()
 
@@ -231,8 +233,8 @@ class SFPR:
                 print("Most likely (mode of results) square: "+str(modeOfData))
 
                 # self.outputCMD = np.zeros(4) # reset outputCMD
-
-                if sendOverSocket:
+                sockMan = True # send over socket
+                if sockMan:
                     toSend = str(modeOfData)
                     # output = f"Calculated SSVEP values: {toSend}"
                     output = toSend
