@@ -10,9 +10,9 @@ import math
 
 
 class UI:
-    def __init__(self):
+    def __init__(self, useThreading:bool=False):
         # Constants to edit for desired processes
-        self.isThreading = True
+        self.isThreading = useThreading
         self.FREQ = [5, 7, 10, 15]
         ########
         self.threadsOn = False
@@ -134,7 +134,7 @@ class UI:
             #####
 
             current_time = pygame.time.get_ticks()
-            if not self.isThreading and current_time >= change_time:
+            if not self.isThreading and current_time >= change_time: # If no threading
                 change_time = current_time + delay
                 show = not show
                 self.no_thread_stimuli(j)
@@ -146,5 +146,5 @@ class UI:
 
 
 if __name__ == "__main__":
-    protoUI = UI()
+    protoUI = UI(useThreading=False)
     protoUI.run_ui()
