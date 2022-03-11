@@ -58,7 +58,7 @@ class SFPR:
         # ZMQ Attempt
         self.ctx = zmq.Context()
         self.sock = self.ctx.socket(zmq.PUB)
-        bindStr = "tcp://*:"+str(port)
+        bindStr = "tcp://127.0.0.1:"+str(port)
         self.sock.bind(bindStr)
         ################
 
@@ -77,6 +77,8 @@ class SFPR:
         self.frequencies = []
 
         self.Threshold = thres # Threshold for SSVEP detection
+
+        self.freqShown = False
 
     def recieve(self, isInf=True, runOnce=False):
         '''
@@ -165,9 +167,16 @@ class SFPR:
                     # Do all SSVEP values for 4 squares we want 
                     # wantedFreqs = [10, 15, 20, 25] # wanted values in HZ
                         # wantedFreqs = np.arange(4.0, 15.0+1, 4.0).tolist() # wanted values in HZ
-                        wantedFreqs = [5, 10.2, 14.4, 18.3] # wanted values in HZ
+                        wantedFreqs = np.arange(5.0,15+1,0.2)
 
-                        self.doSSVEP(num_channels=self.eeg_channels, currentData=self.currentData, samplingRate=self.sampling_rate, sendOverSocket=False, desiredFreqs=wantedFreqs)
+                        ourFreqs = wantedFreqs[11:15]
+                        
+                        if self.freqShown == False:
+                            print("Current Freqs: "+str(ourFreqs))
+                            self.freqShown = True
+                        # wantedFreqs = [5, 10.2, 14.4, 18.3] # wanted values in HZ
+
+                        self.doSSVEP(num_channels=self.eeg_channels, currentData=self.currentData, samplingRate=self.sampling_rate, sendOverSocket=False, desiredFreqs=ourFreqs)
 
                         self.timeSt = time.time()
 
@@ -215,19 +224,19 @@ class SFPR:
             if len(allResults) > 0 :
 
                 modeOfData = max(set(allResults), key=allResults.count)
-                self.outputCMD[modeOfData]+=1
+                # self.outputCMD[modeOfData]+=1
 
-                if self.outputCMD.max() == self.Threshold:
+                # if self.outputCMD.max() == self.Threshold:
                 
-                    print("Most likely (mode of results) square: "+str(modeOfData))
+                print("Most likely (mode of results) square: "+str(modeOfData))
 
-                    self.outputCMD = np.zeros(4) # reset outputCMD
+                # self.outputCMD = np.zeros(4) # reset outputCMD
 
-                    if sendOverSocket:
-                        toSend = str(modeOfData)
-                        # output = f"Calculated SSVEP values: {toSend}"
-                        output = toSend
-                        self.sock.send_string(output)
+                if sendOverSocket:
+                    toSend = str(modeOfData)
+                    # output = f"Calculated SSVEP values: {toSend}"
+                    output = toSend
+                    self.sock.send_string(output)
             else:
                 print("Nothing detected yet! "+str(time.time() - self.startTime))
         except:

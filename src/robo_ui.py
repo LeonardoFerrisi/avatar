@@ -15,7 +15,13 @@ class UI:
         # Constants to edit for desired processes
         self.isThreading = useThreading
         print("Threading: "+str(self.isThreading)) 
-        self.FREQ = [5, 10.2, 14.4, 18.3]
+        self.FREQ = [5, 10.2, 14.4, 18.4]
+
+        # Notes:
+        # freq 5 hz works best when paired with 6.4 hz on sfpr side
+        # 10,2 Hz works best when paied with
+        # 14.4 works best when paired with
+        # 18.l4 works best when paired with
         ########
         self.threadsOn = False
         self.notDesired = False

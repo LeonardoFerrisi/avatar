@@ -1,16 +1,15 @@
 #!/usr/bin/env python3
 
 import zmq
-import rospy,math
-from std_msgs.msg import String
+import rospy
 from nav_msgs.msg import Odometry
 from geometry_msgs.msg import Quaternion, Pose, PoseWithCovariance, Twist
 from tf.transformations import euler_from_quaternion
 
 from turtlesim.msg import Pose
 from sensor_msgs.msg import LaserScan
-from math import pow, atan2, sqrt
 
+import math
 import time
 
 class Robot:
@@ -29,84 +28,101 @@ class Robot:
         socket = context.socket(zmq.SUB) # for UDP
         # socket = context.socket(zmq.REP)
         # socket.connect("tcp://*:5555")
-        socket.connect("tcp://127.0.0.1:4441")
-        socket.subscribe("")
-        
+        try:
+            node="tcp://127.0.0.1:4441"
+            socket.connect(node)
+            socket.subscribe("")
+            print("Successfully connected and listening on: "+str(node))
+        except:
+            print("Uh Oh!, Failed to connect!")
+        j = 0
+        command = ''
         while True:
-            command = socket.recv_string()       
+            command = socket.recv_string()   
             cmd = str(command)
             print("Command recieved: %s " % cmd)
             
             # self.sock.send_string("Confirmed %s " % cmd)
-            
-            if cmd in ['0', '1', '2', '3']:
-                print('sending obey command')
-                self.obey(cmd)
-            elif cmd in ['i','o','k','j']:
-                print('sending obey command')
-                self.obey(cmd)
+            num_cmd = ['0', '1', '2', '3']
+            char_cmd = ['i', 'o', 'k', 'l']
+            new_cmd = ['tr', 'tl', 'br', 'bl']
+            if cmd in num_cmd or cmd in char_cmd:
+                for i in range(0, 4):
+                    if cmd == num_cmd[i] or cmd == char_cmd[i]:
+                        cmd = new_cmd[i]
+            else:
+                raise Exception("Command not recognized >> obey( %s )?"% command)
+            print('sending obey command')
+            j = self.move(cmd, j)
 
 
             time.sleep(1)
 
     
-    def obey(self, command):
+    # def obey(self, command):
         
-        # if the command is one of four commands
-        if command=='0' or command=='i':
+    #     # if the command is one of four commands
+    #     if command=='0' or command=='i':
 
-            # FWD
-            cmd = 'tr'
+    #         # FWD
+    #         cmd = 'tr'
 
-        elif command=='1' or command=='o':
+    #     elif command=='1' or command=='o':
 
-            # BKD    
-            cmd = 'tl'
+    #         # BKD    
+    #         cmd = 'tl'
         
-        elif command=='2' or command=='k':
+    #     elif command=='2' or command=='k':
             
-            # RIGHT
-            cmd = 'br'
+    #         # RIGHT
+    #         cmd = 'br'
 
-        elif command=='3' or command=='l':
+    #     elif command=='3' or command=='l':
             
-            # LEFT
-            cmd = 'bl'
+    #         # LEFT
+    #         cmd = 'bl'
 
-        else:
-            raise Exception("Command not recognized >> obey( %s )?"% command)
+    #     else:
+    #         raise Exception("Command not recognized >> obey( %s )?"% command)
 
 
-        if cmd in ['tr', 'tl', 'br', 'bl']:
-            self.move(cmd)
+    #     if cmd in ['tr', 'tl', 'br', 'bl']:
+    #         self.move(cmd)
 
     
-    def move(self, direction):
-        
+    def move(self, direction, i):
         pub = rospy.Publisher('/cmd_vel', Twist, queue_size=10)
         rate = rospy.Rate(10)
         movCmd = Twist()
         speed = 0.2
 
-        if direction=='tr':
-            movCmd.linear.x = 1.0
+        if direction=='tl':
+            i = 0
+            movCmd.linear.x = speed
             pub.publish(movCmd)
 
-        elif direction=='tl':
-            movCmd.linear.x = -1.0
+        elif direction=='tr':
+            i = 0
+            movCmd.linear.x = -speed
             pub.publish(movCmd)
 
         elif direction=='br':
-            movCmd.angular.z = 1.0
+            i = 0
+            movCmd.angular.z = speed*5
             pub.publish(movCmd)
 
         elif direction=='bl':
-            movCmd.angular.z = -1.0
+            i = 0
+            movCmd.angular.z = speed*-5
             pub.publish(movCmd)
         
         else:
-            movCmd.angular.z = 0.0
-            movCmd.linear.x = 0.0
+            i += 1
+            if i > 3:
+                movCmd.angular.z = 0.0
+                movCmd.linear.x = 0.0
+        
+        rate.sleep()
     ##################################################
 
     # ODOMETRY #########################################
