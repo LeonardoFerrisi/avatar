@@ -94,6 +94,46 @@ def filterbank(eeg, samplingRate, fbIndex):
     return y
 
 
+
+'''
+Generate reference signals for the canonical correlation analysis (CCA)
+-based steady-state visual evoked potentials (SSVEPs) detection [1, 2].
+function [ y_ref ] = cca_reference(listFreq, fs,  nSmpls, nHarms)
+Input:
+  listFreq        : List for stimulus frequencies
+  fs              : Sampling frequency
+  nSmpls          : # of samples in an epoch
+  nHarms          : # of harmonics
+Output:
+  y_ref           : Generated reference signals
+                   (# of targets, 2*# of channels, Data length [sample])
+Reference:
+  [1] Z. Lin, C. Zhang, W. Wu, and X. Gao,
+      "Frequency Recognition Based on Canonical Correlation Analysis for 
+       SSVEP-Based BCI",
+      IEEE Trans. Biomed. Eng., 54(6), 1172-1176, 2007.
+  [2] G. Bin, X. Gao, Z. Yan, B. Hong, and S. Gao,
+      "An online multi-channel SSVEP-based brain-computer interface using
+       a canonical correlation analysis method",
+      J. Neural Eng., 6 (2009) 046002 (6pp).
+'''      
+def cca_reference(list_freqs, fs, num_smpls, num_harms=3):
+    
+    num_freqs = len(list_freqs)
+    tidx = np.arange(1,num_smpls+1)/fs #time index
+    
+    y_ref = np.zeros((num_freqs, 2*num_harms, num_smpls))
+    for freq_i in range(num_freqs):
+        tmp = []
+        for harm_i in range(1,num_harms+1):
+            stim_freq = list_freqs[freq_i]  #in HZ
+            # Sin and Cos
+            tmp.extend([np.sin(2*np.pi*tidx*harm_i*stim_freq),
+                       np.cos(2*np.pi*tidx*harm_i*stim_freq)])
+        y_ref[freq_i] = tmp # 2*num_harms because include both sin and cos
+    
+    return y_ref
+
 '''
 Base on fbcca, but adapt to our input format
 '''

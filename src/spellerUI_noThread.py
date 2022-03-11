@@ -11,7 +11,7 @@ import math
 def draw_stimuli(j,win, positions, frequencies, size):
     i=0
     for frequency in frequencies:
-        result = math.sin(2 * math.pi * frequency * j / 60)
+        result = math.sin(2 * math.pi * frequency * (j / 60))
         sign = lambda x: (1, 0)[x < 0]
         color = 255 * sign(result)
         colors = [color, color, color]
@@ -219,7 +219,9 @@ if __name__ == "__main__":
 
         # update portion of screen
         pygame.display.flip()
-        frequencies = [6.67, 7.5 ,8.57, 10] # 10 Hz
+        # frequencies = [6.67, 7.5 ,8.57, 10] # 10 Hz
+        frequencies = [5.5, 9.8, 13.6, 17.4] # 10 Hz
+
         current_time = pygame.time.get_ticks()
 
         # is time to change ?
