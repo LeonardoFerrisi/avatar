@@ -2,7 +2,9 @@
 
 import warnings
 import scipy.signal
+from scipy.stats import pearsonr
 import numpy as np
+from sklearn.cross_decomposition import CCA
 
 """
 Class for Synchronous (Real Time)
