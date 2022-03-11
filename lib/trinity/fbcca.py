@@ -45,7 +45,11 @@ class filterbankCCA:
     
     """
     Parameters:
-
+    @param data: EEG data
+    @param list_freqs: frequencies we want
+    @param fs: Sampling frequncy (of the board)
+    @param: num_harams: idk
+    @param: num_fbs: idk
     Return:
     """
     def asyncfbCCA(self, data, list_freqs, fs, num_harms=3, num_fbs=5):

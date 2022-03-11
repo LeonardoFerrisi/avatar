@@ -150,9 +150,11 @@ class SFPR:
                 if useSVVEP:
 
                     # Do all SSVEP values for 4 squares we want 
-                    wantedSSVEPValues = [10, 15, 20, 25] # wanted values in HZ
+                    # wantedFreqs = [10, 15, 20, 25] # wanted values in HZ
+                    wantedFreqs = np.arange(4.0, 15.0+1, 4.0) # wanted values in HZ
+                    # wantedFreqs = [6.0, 9.0, 12.0, 15.0] # wanted values in HZ
 
-                    self.doSSVEP(num_channels=self.eeg_channels, currentData=self.currentData, samplingRate=self.sampling_rate, sendOverSocket=sendOverSocket, valuesWeWant=wantedSSVEPValues)
+                    self.doSSVEP(num_channels=self.eeg_channels, currentData=self.currentData, samplingRate=self.sampling_rate, sendOverSocket=False, desiredFreqs=wantedFreqs)
 
                     # FORMAT: doSSVEP(num_channels, currentData, samplingRate, sendOverSocket, valuesWeWant : list):
 
@@ -162,27 +164,28 @@ class SFPR:
         if runOnce and not isInf:
             self.runOnce()
 
-
-    def runML(self):
-        pass
-
-    def doSSVEP(self, num_channels, currentData, samplingRate, sendOverSocket=True, valuesWeWant : list, useCCA:bool=False):
-        '''
-        Takes parameters from reciever function and sfpr class in order to get SSVEP values from a list
-        @param num_channels: The number of eeg_channels our board has
-        @param currentData: The current data being streamed from our board
-        @param samplingRate: The sampling rate of our board
-        @param sendOverSocket: Boolean value of whether or not we want to send over socket
-        @param valuesWeWant: A list containing values of SSVEP we want to scan for (SSVEP values are in Hertz)
-        '''
+    '''
+    Takes parameters from reciever function and sfpr class in order to get SSVEP values from a list
+    @param num_channels: The number of eeg_channels our board has
+    @param currentData: The current data being streamed from our board
+    @param samplingRate: The sampling rate of our board
+    @param sendOverSocket: Boolean value of whether or not we want to send over socket
+    @param valuesWeWant: A list containing values of SSVEP we want to scan for (SSVEP values are in Hertz)
+    '''
+    def doSSVEP(self, num_channels, currentData, samplingRate, sendOverSocket, desiredFreqs):
 
         f = filterbankCCA()
         
-        # result = f.asyncasyncfbCCA()
+        # totalResult = 0
+
+
+        for chan in num_channels:
+            result = f.asyncfbCCA(data=currentData, list_freqs=desiredFreqs, fs=samplingRate)
+            print(f"Channel: {chan}, FILTERBANKCCA output: >> {str(result)}")    
 
         try: 
             if sendOverSocket:
-                toSend = str(_ssvepTotals)
+                toSend = str("_ssvepTotals")
                 # output = f"Calculated SSVEP values: {toSend}"
                 output = toSend
                 self.sock.send_string(output)
@@ -281,7 +284,7 @@ if __name__ == "__main__":
     newRelay = SFPR(-1)
     # newRelay = SFPR(0)
     # newRelay.activateFocus()
-    # newRelay.activateSSVEP()
+    newRelay.activateSSVEP()
     # print('Do SSVEP value: ', newRelay.doSSVEP)
     newRelay.recieve()
     exit = input("Press ENTER to exit")
