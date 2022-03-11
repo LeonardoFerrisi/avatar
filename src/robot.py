@@ -105,7 +105,8 @@ class Robot:
             pub.publish(movCmd)
         
         else:
-            raise Exception("Command not recognized >> obey( %s )?"% command)
+            movCmd.angular.z = 0.0
+            movCmd.linear.x = 0.0
     ##################################################
 
     # ODOMETRY #########################################

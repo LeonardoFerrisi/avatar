@@ -24,7 +24,7 @@ SFPR: Signal Filtering and Processing Relay
 
 class SFPR:
 
-    def __init__(self, masterboardId : int):
+    def __init__(self, masterboardId : int, port: str, thres:int=2):
 
         # Initilize the board for usage in local
         board_id = -2
@@ -58,7 +58,8 @@ class SFPR:
         # ZMQ Attempt
         self.ctx = zmq.Context()
         self.sock = self.ctx.socket(zmq.PUB)
-        self.sock.bind("tcp://*:1234")
+        bindStr = "tcp://*:"+str(port)
+        self.sock.bind(bindStr)
         ################
 
         # for controlling loop
@@ -74,6 +75,8 @@ class SFPR:
 
         # Frequncies to analyze using SSVEP
         self.frequencies = []
+
+        self.Threshold = thres # Threshold for SSVEP detection
 
     def recieve(self, isInf=True, runOnce=False):
         '''
@@ -103,6 +106,9 @@ class SFPR:
         useSVVEP = self.doSSVEPbool
 
         self.timeSt = time.time()
+
+        self.outputCMD = np.zeros(4) # we're only working with 4 frequncies 
+
         while keep_alive:
 
             # self.wholeData = self.board_recv.get_board_data()
@@ -205,19 +211,25 @@ class SFPR:
                     allResults.append(resultFinal[0])
         print("All Results: "+str(allResults))
 
-        if len(allResults) > 0:
-            modeOfData = max(set(allResults), key=allResults.count)
-            print("Most likely (mode of results) square: "+str(modeOfData))
-        else:
-            print("Nothing detected yet! "+str(time.time() - self.startTime))
-
         try: 
-            if len(allResults) > 0:
-                if sendOverSocket:
-                    toSend = str(modeOfData)
-                    # output = f"Calculated SSVEP values: {toSend}"
-                    output = toSend
-                    self.sock.send_string(output)
+            if len(allResults) > 0 :
+
+                modeOfData = max(set(allResults), key=allResults.count)
+                self.outputCMD[modeOfData]+=1
+
+                if self.outputCMD.max() == self.Threshold:
+                
+                    print("Most likely (mode of results) square: "+str(modeOfData))
+
+                    self.outputCMD = np.zeros(4) # reset outputCMD
+
+                    if sendOverSocket:
+                        toSend = str(modeOfData)
+                        # output = f"Calculated SSVEP values: {toSend}"
+                        output = toSend
+                        self.sock.send_string(output)
+            else:
+                print("Nothing detected yet! "+str(time.time() - self.startTime))
         except:
             print("Socket send FAILED")
 
@@ -311,7 +323,7 @@ class SFPR:
 
 if __name__ == "__main__":
     # newRelay = SFPR(-1)
-    newRelay = SFPR(0)
+    newRelay = SFPR(masterboardId=0, port='4441', thres=2)
     # newRelay.activateFocus()
     newRelay.activateSSVEP()
     # print('Do SSVEP value: ', newRelay.doSSVEP)
