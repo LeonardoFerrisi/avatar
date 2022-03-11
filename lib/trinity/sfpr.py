@@ -15,6 +15,8 @@ import socket
 import zmq
 import sys
 
+from fbcca import filterbankCCA
+
 """
 SFPR: Signal Filtering and Processing Relay
 """
@@ -164,7 +166,7 @@ class SFPR:
     def runML(self):
         pass
 
-    def doSSVEP(self, num_channels, currentData, samplingRate, sendOverSocket, valuesWeWant : list, useCCA:bool=False):
+    def doSSVEP(self, num_channels, currentData, samplingRate, sendOverSocket=True, valuesWeWant : list, useCCA:bool=False):
         '''
         Takes parameters from reciever function and sfpr class in order to get SSVEP values from a list
         @param num_channels: The number of eeg_channels our board has
@@ -174,41 +176,9 @@ class SFPR:
         @param valuesWeWant: A list containing values of SSVEP we want to scan for (SSVEP values are in Hertz)
         '''
 
-
-        # create dict of all _ssvepTotals
+        f = filterbankCCA()
         
-        _ssvepTotals = {}
-
-        for value in valuesWeWant:
-            _ssvepTotals[value] = 0.0
-        
-        # print(_ssvepTotals)
-        
-        ##################################
-
-        # Detrend data and get PSD welch from every single channel
-
-        for i in num_channels:
-
-            DataFilter.detrend(currentData[i], DetrendOperations.LINEAR.value)
-
-            psd = DataFilter.get_psd_welch(currentData[i], self.nfft, self.nfft // 2, samplingRate,
-                        WindowFunctions.BLACKMAN_HARRIS.value)
-
-
-            for ssvepVal in valuesWeWant:
-                toAdd = DataFilter.get_band_power(psd, float(ssvepVal - 1.0), float(ssvepVal + 1.0)) # gets a range of + or minus 1.0
-                currentValue = _ssvepTotals[ssvepVal]
-                _ssvepTotals[ssvepVal] = currentValue+toAdd
-                # print('SSVEP VALUE: ', ssvepVal, ', Current lvl: ', _ssvepTotals[ssvepVal])
-
-        # print('SSVEP TOTALS [ pre averaged ]: ', _ssvepTotals)
-
-        for ssvepValue in _ssvepTotals:
-            averagedValue = int(ssvepValue) / len(num_channels)
-            _ssvepTotals[ssvepValue] = averagedValue
-        
-        print('SSVEP TOTALS: ', _ssvepTotals)
+        # result = f.asyncasyncfbCCA()
 
         try: 
             if sendOverSocket:
