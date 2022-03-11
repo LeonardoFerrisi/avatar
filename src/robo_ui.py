@@ -82,6 +82,30 @@ class UI:
             pygame.draw.rect(self.screen, colors, stimuli_rect)
             pygame.display.update()
 
+    def box_names(self):
+        labels = ['Forward', 'Back', 'Left', 'Right']
+        for i in range(0, 4):
+            label_text = self.base_font.render(labels[i], True, self.WHITE)
+            label_rect = label_text.get_rect()
+            if (i % 2) == 0:
+                temploc = (self.locs[i][0]+self.LSIZE, self.locs[i][1])
+                print(temploc)
+                label_rect.topleft = temploc
+            else:
+                label_rect.topright = self.locs[i]
+            self.screen.blit(label_text, label_rect)
+
+    def set_locs(self):
+        # locations of stimuli blocks (top left corners of each block)
+        sub_coord_w = self.X - (30.0 + self.LSIZE)
+        sub_coord_h = self.Y - (30.0 + self.LSIZE)
+        loc1 = (30.0, 30.0)
+        loc2 = (sub_coord_w, 30.0)
+        loc3 = (30.0, sub_coord_h)
+        loc4 = (sub_coord_w, sub_coord_h)
+        self.locs = (loc1, loc2, loc3, loc4)
+        #####
+
     def run_ui(self):
         user_text = ''
         self.screen.fill(self.BLACK)
@@ -90,9 +114,10 @@ class UI:
         delay = 1000./60
         show = True
         j = 0
-
+        self.set_locs()
+        self.box_names()
         while True:
-
+            
             for event in pygame.event.get():
 
                 # if user types QUIT then the screen will close
@@ -128,16 +153,6 @@ class UI:
             # no more than 60 fps
             self.clock.tick(60)
 
-            # locations of stimuli blocks (top left corners of each block)
-            sub_coord_w = self.X - (30.0 + self.LSIZE)
-            sub_coord_h = self.Y - (30.0 + self.LSIZE)
-            loc1 = (30.0, 30.0)
-            loc2 = (sub_coord_w, 30.0)
-            loc3 = (30.0, sub_coord_h)
-            loc4 = (sub_coord_w, sub_coord_h)
-            self.locs = (loc1, loc2, loc3, loc4)
-            #####
-
             current_time = pygame.time.get_ticks()
             if not self.isThreading and current_time >= change_time: # If no threading
                 change_time = current_time + delay
@@ -152,5 +167,5 @@ class UI:
 
 
 if __name__ == "__main__":
-    protoUI = UI(useThreading=False)
+    protoUI = UI(useThreading=True)
     protoUI.run_ui()
