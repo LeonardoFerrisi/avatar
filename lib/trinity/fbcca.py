@@ -28,17 +28,15 @@ class filterbankCCA:
         self.SAMPLINGRATE = s
         self.harmonicsQ = num_harms # The number of harmonics, idk what that is
         self.filterbanksQ = num_fbs # The quantity of filterbanks
-        
-        
+
+    """
+    Paramters:
+    Return:
+    """   
     def __init__(self):
         pass
     
-    """
-    Paramters:
-
-    Return:
-
-    """
+    
     def syncfbCCA(self):
         
         pass
@@ -87,17 +85,17 @@ class filterbankCCA:
         else:
             return result
 
+"""
+Creates a filterbank from eeg data
 
+Parameters:
+eeg (multidimensional ndarray: float64): The input eeg data from the eeg data stream
+samplingRate ():
+index (int): The current index of the filterbank
+
+"""
 def filterbank(eeg, samplingRate, fbIndex):
-    """
-    Creates a filterbank from eeg data
-
-    Parameters:
-    eeg (multidimensional ndarray: float64): The input eeg data from the eeg data stream
-    samplingRate ():
-    index (int): The current index of the filterbank
-
-    """
+    
     if fbIndex == None:
         warnings.warn('stats:filterbank:MissingInput '\
                       +'Missing filter index. Default value (idx_fb = 0) will be used.')
