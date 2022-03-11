@@ -92,3 +92,41 @@ def filterbank(eeg, samplingRate, fbIndex):
                 y[ch_i, :, trial_i] = scipy.signal.filtfilt(B, A, eeg[ch_i, :, trial_i], padtype = 'odd', padlen=3*(max(len(B),len(A))-1))
            
     return y
+
+
+'''
+Base on fbcca, but adapt to our input format
+'''
+def fbcca_realtime(data, list_freqs, fs, num_harms=3, num_fbs=5):
+    fb_coefs = np.power(np.arange(1, num_fbs + 1), (-1.25)) + 0.25
+
+    num_targs = len(list_freqs)
+    _, num_smpls = data.shape
+
+    y_ref = cca_reference(list_freqs, fs, num_smpls, num_harms)
+    cca = CCA(n_components=1)  # initialize CCA
+
+    # result matrix
+    r = np.zeros((num_fbs, num_targs))
+
+    for fb_i in range(num_fbs):  # filter bank number, deal with different filter bank
+        testdata = filterbank(data, fs, fb_i)  # data after filtering
+        for class_i in range(num_targs):
+            refdata = np.squeeze(y_ref[class_i, :, :])  # pick corresponding freq target reference signal
+            test_C, ref_C = cca.fit_transform(testdata.T, refdata.T)
+            r_tmp, _ = pearsonr(np.squeeze(test_C), np.squeeze(ref_C))  # return r and p_value
+            if r_tmp == np.nan:
+                r_tmp = 0
+            r[fb_i, class_i] = r_tmp
+
+    rho = np.dot(fb_coefs, r)  # weighted sum of r from all different filter banks' result
+    print(rho)  # print out the correlation
+    result = np.argmax(
+        rho)  # get maximum from the target as the final predict (get the index), and index indicates the maximum entry(most possible target)
+    ''' Threshold '''
+    THRESHOLD = 2.1
+    if abs(rho[
+               result]) < THRESHOLD:  # 2.587=np.sum(fb_coefs*0.8) #2.91=np.sum(fb_coefs*0.9) #1.941=np.sum(fb_coefs*0.6)
+        return 999  # if the correlation isn't big enough, do not return any command
+    else:
+        return result
