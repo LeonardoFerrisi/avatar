@@ -15,7 +15,7 @@ class UI:
         # Constants to edit for desired processes
         self.isThreading = useThreading
         print("Threading: "+str(self.isThreading)) 
-        self.FREQ = [5, 7, 10, 15]
+        self.FREQ = [6.6, 10.2, 14.4, 18.3]
         ########
         self.threadsOn = False
         self.notDesired = False

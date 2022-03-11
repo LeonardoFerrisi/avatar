@@ -34,6 +34,8 @@ class SFPR:
         params.ip_address = '225.1.1.1'
         self.board_recv = BoardShim(board_id, input_params=params)
 
+        self.startTime = time.time()
+
         self.master_board_id = masterboardId
 
         self.eeg_channels = BoardShim.get_eeg_channels(
@@ -97,6 +99,7 @@ class SFPR:
         useML = self.doFocus # Right now only checks for measuring ML metric for concentration
         useSVVEP = self.doSSVEPbool
 
+        self.timeSt = time.time()
         while keep_alive:
 
             # self.wholeData = self.board_recv.get_board_data()
@@ -148,13 +151,16 @@ class SFPR:
                             self.sock.send_string(output)
 
                 if useSVVEP:
-
+                    # print(self.timeSt - time.time())
+                    if (time.time() - self.timeSt > 2):
                     # Do all SSVEP values for 4 squares we want 
                     # wantedFreqs = [10, 15, 20, 25] # wanted values in HZ
-                    wantedFreqs = np.arange(4.0, 15.0+1, 4.0) # wanted values in HZ
-                    # wantedFreqs = [6.0, 9.0, 12.0, 15.0] # wanted values in HZ
+                    # wantedFreqs = np.arange(4.0, 15.0+1, 4.0) # wanted values in HZ
+                        wantedFreqs = [6.6, 10.2, 14.4, 18.3] # wanted values in HZ
 
-                    self.doSSVEP(num_channels=self.eeg_channels, currentData=self.currentData, samplingRate=self.sampling_rate, sendOverSocket=False, desiredFreqs=wantedFreqs)
+                        self.doSSVEP(num_channels=self.eeg_channels, currentData=self.currentData, samplingRate=self.sampling_rate, sendOverSocket=False, desiredFreqs=wantedFreqs)
+
+                        self.timeSt = time.time()
 
                     # FORMAT: doSSVEP(num_channels, currentData, samplingRate, sendOverSocket, valuesWeWant : list):
 
@@ -181,7 +187,9 @@ class SFPR:
 
         for chan in num_channels:
             result = f.asyncfbCCA(data=currentData, list_freqs=desiredFreqs, fs=samplingRate)
-            print(f"Channel: {chan}, FILTERBANKCCA output: >> {str(result)}")    
+            if result!=999:
+                # print(f"Channel: {chan}, FILTERBANKCCA output: >> {str(result)}")    
+                print(str(result[0]))
 
         try: 
             if sendOverSocket:
@@ -281,8 +289,8 @@ class SFPR:
 
 
 if __name__ == "__main__":
-    newRelay = SFPR(-1)
-    # newRelay = SFPR(0)
+    # newRelay = SFPR(-1)
+    newRelay = SFPR(0)
     # newRelay.activateFocus()
     newRelay.activateSSVEP()
     # print('Do SSVEP value: ', newRelay.doSSVEP)
