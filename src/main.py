@@ -9,4 +9,6 @@ result = np.arange(7.0, 16.0+1, 3.0)
 
 result_list = result.tolist()
 
+## 
+
 print(str(result_list))
