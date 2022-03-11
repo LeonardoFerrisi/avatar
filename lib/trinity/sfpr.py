@@ -152,11 +152,11 @@ class SFPR:
 
                 if useSVVEP:
                     # print(self.timeSt - time.time())
-                    if (time.time() - self.timeSt > 2):
+                    if (time.time() - self.timeSt > 1):
                     # Do all SSVEP values for 4 squares we want 
                     # wantedFreqs = [10, 15, 20, 25] # wanted values in HZ
                     # wantedFreqs = np.arange(4.0, 15.0+1, 4.0) # wanted values in HZ
-                        wantedFreqs = [6.6, 10.2, 14.4, 18.3] # wanted values in HZ
+                        wantedFreqs = [5, 10.2, 14.4, 18.3] # wanted values in HZ
 
                         self.doSSVEP(num_channels=self.eeg_channels, currentData=self.currentData, samplingRate=self.sampling_rate, sendOverSocket=False, desiredFreqs=wantedFreqs)
 
@@ -181,15 +181,18 @@ class SFPR:
     def doSSVEP(self, num_channels, currentData, samplingRate, sendOverSocket, desiredFreqs):
 
         f = filterbankCCA()
-        
-        # totalResult = 0
-
 
         for chan in num_channels:
             result = f.asyncfbCCA(data=currentData, list_freqs=desiredFreqs, fs=samplingRate)
+            # print(str(result))
             if result!=999:
-                # print(f"Channel: {chan}, FILTERBANKCCA output: >> {str(result)}")    
-                print(str(result[0]))
+                print(f"Channel: {chan}, FILTERBANKCCA output: >> {str(result)}")    
+                resString = str(result)
+                resString = resString.replace("[","")
+                resString = resString.replace("]","")
+                resString = resString.replace("  "," ")
+                resultFinal = resString.split(" ")
+                print(str(resultFinal)+", result[0]: "+str(resultFinal[0]))
 
         try: 
             if sendOverSocket:
