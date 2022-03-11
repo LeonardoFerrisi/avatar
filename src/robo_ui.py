@@ -14,6 +14,7 @@ class UI:
     def __init__(self, useThreading:bool=False):
         # Constants to edit for desired processes
         self.isThreading = useThreading
+        print("Threading: "+str(self.isThreading)) 
         self.FREQ = [5, 7, 10, 15]
         ########
         self.threadsOn = False
@@ -24,6 +25,9 @@ class UI:
         self._init_pygame()
         self._init_text()
         self.LSIZE = self.X // 5
+        
+        # Some metrics
+        self.startTime = time.time()
 
     def _init_const(self):
         self.WHITE = (255, 255, 255)
@@ -140,7 +144,8 @@ class UI:
                 show = not show
                 self.no_thread_stimuli(j)
                 pygame.display.update()
-                j += 1
+                j+=1
+                # print("Time elapsed: "+str(float(time.time() - self.startTime)))
             elif self.isThreading and not self.threadsOn:
                 self.threadsOn = True
                 self.start_threads()
