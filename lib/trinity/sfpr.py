@@ -72,11 +72,14 @@ class SFPR:
         self.doSSVEPbool = False
         self.doRelaxation = False
 
+        # Frequncies to analyze using SSVEP
+        self.frequencies = []
+
     def recieve(self, isInf=True, runOnce=False):
         '''
         Recieves the stream of EEG data from a designated port {params.ip_address}:{params.ip_port}
-        @param isInf: Determines whether or not we want to be running a infinite loop 
-        @param runOnce: Determine whether or not we want to run only once (isInf cannot be on)
+        :param isInf: Determines whether or not we want to be running a infinite loop 
+        :param runOnce: Determine whether or not we want to run only once (isInf cannot be on)
         '''
         self.board_recv.prepare_session()
         self.board_recv.start_stream(45000)
@@ -155,7 +158,7 @@ class SFPR:
                     if (time.time() - self.timeSt > 1):
                     # Do all SSVEP values for 4 squares we want 
                     # wantedFreqs = [10, 15, 20, 25] # wanted values in HZ
-                    # wantedFreqs = np.arange(4.0, 15.0+1, 4.0) # wanted values in HZ
+                        # wantedFreqs = np.arange(4.0, 15.0+1, 4.0).tolist() # wanted values in HZ
                         wantedFreqs = [5, 10.2, 14.4, 18.3] # wanted values in HZ
 
                         self.doSSVEP(num_channels=self.eeg_channels, currentData=self.currentData, samplingRate=self.sampling_rate, sendOverSocket=False, desiredFreqs=wantedFreqs)
@@ -170,36 +173,51 @@ class SFPR:
         if runOnce and not isInf:
             self.runOnce()
 
-    '''
-    Takes parameters from reciever function and sfpr class in order to get SSVEP values from a list
-    @param num_channels: The number of eeg_channels our board has
-    @param currentData: The current data being streamed from our board
-    @param samplingRate: The sampling rate of our board
-    @param sendOverSocket: Boolean value of whether or not we want to send over socket
-    @param valuesWeWant: A list containing values of SSVEP we want to scan for (SSVEP values are in Hertz)
-    '''
-    def doSSVEP(self, num_channels, currentData, samplingRate, sendOverSocket, desiredFreqs):
+    
+    def doSSVEP(self, num_channels, currentData, samplingRate, sendOverSocket:bool, desiredFreqs):
+        '''
+        Takes parameters from reciever function and sfpr class in order to get SSVEP values from a list
+
+        :param num_channels: The number of eeg_channels our board has
+        :param currentData: The current data being streamed from our board
+        :param samplingRate: The sampling rate of our board
+        :param sendOverSocket: Boolean value of whether or not we want to send over socket
+        :param valuesWeWant: A list containing values of SSVEP we want to scan for (SSVEP values are in Hertz)
+        '''
 
         f = filterbankCCA()
 
+        allResults = []
         for chan in num_channels:
-            result = f.asyncfbCCA(data=currentData, list_freqs=desiredFreqs, fs=samplingRate)
-            # print(str(result))
-            if result!=999:
-                print(f"Channel: {chan}, FILTERBANKCCA output: >> {str(result)}")    
-                resString = str(result)
-                resString = resString.replace("[","")
-                resString = resString.replace("]","")
-                resString = resString.replace("  "," ")
-                resultFinal = resString.split(" ")
-                print(str(resultFinal)+", result[0]: "+str(resultFinal[0]))
+            
+            if chan > 2: # Only look at last 6 channels
+                print(f"Chan: {chan}")
+                result = f.asyncfbCCA(data=currentData, list_freqs=desiredFreqs, fs=samplingRate)
+                # print(str(result))
+                if result!=999:
+                    print(f"Channel: {chan}, FILTERBANKCCA output: >> {str(result)}")    
+                    resString = str(result)
+                    resString = resString.replace("[","")
+                    resString = resString.replace("]","")
+                    resString = resString.replace("  "," ")
+                    resultFinal = resString.split(" ")
+                    print(str(resultFinal)+", result[0]: "+str(resultFinal[0]))
+                    allResults.append(resultFinal[0])
+        print("All Results: "+str(allResults))
+
+        if len(allResults) > 0:
+            modeOfData = max(set(allResults), key=allResults.count)
+            print("Most likely (mode of results) square: "+str(modeOfData))
+        else:
+            print("Nothing detected yet! "+str(time.time() - self.startTime))
 
         try: 
-            if sendOverSocket:
-                toSend = str("_ssvepTotals")
-                # output = f"Calculated SSVEP values: {toSend}"
-                output = toSend
-                self.sock.send_string(output)
+            if len(allResults) > 0:
+                if sendOverSocket:
+                    toSend = str(modeOfData)
+                    # output = f"Calculated SSVEP values: {toSend}"
+                    output = toSend
+                    self.sock.send_string(output)
         except:
             print("Socket send FAILED")
 
@@ -222,7 +240,7 @@ class SFPR:
     # Theres a better way of doing this but whatever...
 
     def activateSSVEP(self):
-        # TODO: Needs more info, activate SSVEP should as for a range of values that it can send out
+        # TODO: Needs more info, activate SSVEP should ask for a range of values that it can send out
         '''
         Sets the check for SSVEP value to true, any other values are true shuts them off.
         RUN THIS BEFORE YOU run recieve()

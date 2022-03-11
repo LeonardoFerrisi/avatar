@@ -78,7 +78,7 @@ class filterbankCCA:
         result = np.argmax(
             rho)  # get maximum from the target as the final predict (get the index), and index indicates the maximum entry(most possible target)
         ''' Threshold '''
-        THRESHOLD = 0.98
+        THRESHOLD = 0.90
         if abs(rho[
                 result]) < THRESHOLD:  # 2.587=np.sum(fb_coefs*0.8) #2.91=np.sum(fb_coefs*0.9) #1.941=np.sum(fb_coefs*0.6)
             return 999  # if the correlation isn't big enough, do not return any command

@@ -46,9 +46,9 @@ class Comms:
 if __name__ == "__main__":
 
     comms = Comms()
-    # comms = Comms(0, '/dev/ttyUSB0')
+    comms = Comms(0, '/dev/ttyUSB0')
 
-    comms = Comms(boardID = 0, serialPort='COM4')
+    # comms = Comms(boardID = 0, serialPort='COM4')
     # comms = Comms(boardID = -1)
 
     comms.start(inf=True)

@@ -39,9 +39,13 @@ class Robot:
             
             # self.sock.send_string("Confirmed %s " % cmd)
             
-            if cmd in ['i', 'o', 'k', 'l']:
+            if cmd in ['0', '1', '2', '3']:
                 print('sending obey command')
                 self.obey(cmd)
+            elif cmd in ['i','o','k','j']:
+                print('sending obey command')
+                self.obey(cmd)
+
 
             time.sleep(1)
 
@@ -49,16 +53,29 @@ class Robot:
     def obey(self, command):
         
         # if the command is one of four commands
-        if command=='i':
+        if command=='0' or command=='i':
+
+            # FWD
             cmd = 'tr'
-        elif command=='o':
+
+        elif command=='1' or command=='o':
+
+            # BKD    
             cmd = 'tl'
-        elif command=='k':
+        
+        elif command=='2' or command=='k':
+            
+            # RIGHT
             cmd = 'br'
-        elif command=='l':
+
+        elif command=='3' or command=='l':
+            
+            # LEFT
             cmd = 'bl'
+
         else:
             raise Exception("Command not recognized >> obey( %s )?"% command)
+
 
         if cmd in ['tr', 'tl', 'br', 'bl']:
             self.move(cmd)
@@ -66,7 +83,7 @@ class Robot:
     
     def move(self, direction):
         
-        pub = rospy.Publisher('/turtle1/cmd_vel', Twist, queue_size=10)
+        pub = rospy.Publisher('/cmd_vel', Twist, queue_size=10)
         rate = rospy.Rate(10)
         movCmd = Twist()
         speed = 0.2
@@ -76,16 +93,19 @@ class Robot:
             pub.publish(movCmd)
 
         elif direction=='tl':
-            pass
+            movCmd.linear.x = -1.0
+            pub.publish(movCmd)
 
         elif direction=='br':
-            pass
+            movCmd.angular.z = 1.0
+            pub.publish(movCmd)
 
         elif direction=='bl':
-            pass
+            movCmd.angular.z = -1.0
+            pub.publish(movCmd)
         
         else:
-            pass
+            raise Exception("Command not recognized >> obey( %s )?"% command)
     ##################################################
 
     # ODOMETRY #########################################
