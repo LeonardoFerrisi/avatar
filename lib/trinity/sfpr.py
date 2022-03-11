@@ -164,7 +164,7 @@ class SFPR:
     def runML(self):
         pass
 
-    def doSSVEP(self, num_channels, currentData, samplingRate, sendOverSocket, valuesWeWant : list):
+    def doSSVEP(self, num_channels, currentData, samplingRate, sendOverSocket, valuesWeWant : list, useCCA:bool=False):
         '''
         Takes parameters from reciever function and sfpr class in order to get SSVEP values from a list
         @param num_channels: The number of eeg_channels our board has
