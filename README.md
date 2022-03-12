@@ -1,8 +1,11 @@
+______________________________________________________________________________________________________________________________
 # AVATAR
 
 A package for remotley controlling a robot with your mind. No really.
-A project in telepathic teleprescence using Robtics, Brain Computer Interfacing, and regretabbly no input from James Cameron
 
+A project in telepathic teleprescence using Robotics, Brain Computer Interfacing, and regretabbly no input from James Cameron
+
+______________________________________________________________________________________________________________________________
 
 Instructions for usage:
 
@@ -18,10 +21,11 @@ Instructions for usage:
 Main python library dependencies:
 
     - See requirements.txt... however heavily dependent on
-    - Brainflow (link)
-    - ZMQ (link)
-    - pygame (link)
-    - numpy (link)
+    - Brainflow (https://brainflow.org/)
+    - ZMQ (https://zeromq.org/)
+    - pygame (https://www.pygame.org/)
+    - numpy (https://numpy.org/)
+    - ROS (and rospy of course) (https://www.ros.org/)
 
 File Structure:
   
