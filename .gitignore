@@ -25,3 +25,4 @@ src/__pycache__/*
 avatar_env/Scripts/*
 src/psychopy_test.py
 lib/trinity/__pycache__/*
+/avatar_env_unix/lib/python3.8/site-packages
