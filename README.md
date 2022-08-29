@@ -1,12 +1,8 @@
-______________________________________________________________________________________________________________________________
+![Logo](https://github.com/LeonardoFerrisi/avatar/blob/main/avatar_logo.png)
 # AVATAR
-
 ## An implementation for real-time Brain Computer Interfaces using ROS and Brainflow.
 
-A package for remotley controlling a robot with your mind. No really.
-
-A project in telepathic teleprescence using Robotics, Brain Computer Interfacing, and regretabbly no input from James Cameron
-
+**A package for remotley controlling a robot with your mind. No really.**
 ______________________________________________________________________________________________________________________________
 
 Instructions for usage:
