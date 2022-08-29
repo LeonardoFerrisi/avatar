@@ -1,6 +1,8 @@
 ______________________________________________________________________________________________________________________________
 # AVATAR
 
+## An implementation for real-time Brain Computer Interfaces using ROS and Brainflow.
+
 A package for remotley controlling a robot with your mind. No really.
 
 A project in telepathic teleprescence using Robotics, Brain Computer Interfacing, and regretabbly no input from James Cameron
